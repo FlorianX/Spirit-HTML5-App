@@ -1,0 +1,40 @@
+# SpiritHtml5App is a simple HTML5 Android App which uses the RESTful interface of the
+# Spirit-News blogging system from the Faculty of Computer Science
+# of the University of Applied Sciences Schmalkalden!
+
+This app belongs to the HTML5 Experiments of my master thesis, 
+but it was splitted for development into an own repo.
+* https://github.com/FlorianX/HTML5-experiments
+
+
+Spirit-News
+* https://github.com/spirit-fhs/news
+* http://spirit.fh-schmalkalden.de/
+
+
+
+You can download a stable APK from:
+* http://florianx.illaz.de/SpiritHtml5App.apk
+
+
+
+The App is developed for Android 2.2+
+
+Features:
+~ get the news by calling the RESTful service
+~ save the news in the localStorage
+
+
+The files in the src/-folder are only needed to start the App. You can find the
+App-files in the assets/www/-folder.
+
+
+This App uses:
+~ HTML5
+~ jQuery
+~ jQuery Mobile
+~ a textile converter (by ben@ben-daglish.net http://www.ben-daglish.net/textile/textile.js)
+
+You must have a running Android SDK.
+You can find a german intruduction here:
+* http://www.nwct.de/archives/45-Anleitung-fuer-Eclipse-und-Android-SDK.html

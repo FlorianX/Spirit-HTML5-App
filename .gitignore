@@ -1,0 +1,9 @@
+# use glob syntax.
+syntax: glob
+
+# eclipse conf file
+.classpath
+.project
+
+gen
+bin
