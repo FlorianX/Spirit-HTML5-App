@@ -34,11 +34,20 @@
 			renderNews(JSON.parse(localNewsJSON));
 		}else{
 			// fetch the news from the REST interface of the news plattform 
-			$.getJSON("http://spirit.fh-schmalkalden.de/news",function (data){
-				// save the data to the localStorage
-				localStorage.setItem('SpiritNews', JSON.stringify(data));
-				// call renderNews with the fetched data
-				renderNews(data);
+			$.ajax({
+			  url: "http://spirit.fh-schmalkalden.de/news",
+			  dataType: 'json',
+			  success: function (data){
+					// save the data to the localStorage
+					localStorage.setItem('SpiritNews', JSON.stringify(data));
+					// call renderNews with the fetched data
+					renderNews(data);
+				},
+			  error: function(jqXHR, textStatus, errorThrown){
+			      // hide the loading animation
+				  $.mobile.hidePageLoadingMsg();
+				  alert("Konnte keine Verbindung zum Server herstellen!");
+			    }
 			});
 		}
 	}
