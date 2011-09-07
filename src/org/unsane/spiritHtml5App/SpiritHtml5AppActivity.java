@@ -20,7 +20,7 @@ public class SpiritHtml5AppActivity extends Activity {
         tracker = GoogleAnalyticsTracker.getInstance();
 
         // Start the tracker in manual dispatch mode...
-        tracker.startNewSession("UA-20869150-2", 5, this);
+        tracker.startNewSession("UA-20869340-1", 5, this);
         
         setContentView(R.layout.main);
         /**
