@@ -94,20 +94,33 @@
 		$.mobile.hidePageLoadingMsg();
 	}
 	
-	// if the page ist loaded call getNews()
 	$(document).ready(function(){
-			getNews();
-	});  
+		// if the page ist loaded call getNews()
+		getNews();
+		
+		 $("#pageone").bind("swipeleft", function(event,ui){
+		  $.mobile.changePage($("#pagetwo"));
+		 })
+
+		 $("#pagetwo").bind("swiperight", function(event,ui){
+		  $.mobile.changePage($("#pageone"), {reverse:true});
+		 })
+	});
 	</script>
 	<style>
 	.news_writer, .news_semester{margin-bottom:10px;}
 	</style>
 </head>
 <body> 
-<div data-role="page" data-theme="b">
+<div data-role="page" data-theme="b" id="pageone">
 	<button data-role="button" data-icon="refresh" onclick="getNews(true);" data-theme="b">Update!</button>
 	<div data-role="content" id="content">	
 	</div><!-- /content -->
+</div><!-- /page -->
+<div data-role="page" data-theme="b" id="pagetwo">
+ <div data-role="content" id="content2">
+  SECOND PAGE
+ </div><!-- /content -->
 </div><!-- /page -->
 </body>
 </html>
