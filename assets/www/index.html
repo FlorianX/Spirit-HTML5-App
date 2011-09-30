@@ -61,31 +61,35 @@
 	function renderNews(news){
 		// needed for html creation
 		var items = [];
-		
+
 		// jQery utility funtion
 		$.each(news, function(key, value) {
 			// create a JavaScript Date object
 			var date = new Date(value.date);
 			
 			// create the html for each news
-			// the data-* attributes are used by jQuery ;obile 
-			var html = '<div data-role="collapsible" data-collapsed="true" data-theme="b">'+
+			// the data-* attributes are used by jQuery mobile 
+			var html = '<li><a href="#news-item-' + value.nr + '" data-transition="none">' +
 				'<h3>' + value.subject + '</h3>' +
-				// convert textile to html with the textile.js
-				'<div class="news_content">' + convert(value.news) + '</div>' +
-				'<div class="ui-grid-a">' +
-				'<div class="ui-block-a news_writer">by ' + value.writer + '</div>' +
-				'<div class="ui-block-b">' + date.getDate() + '.' + date.getMonth() + '. ' + date.getHours() + ':' + date.getMinutes()  + 'Uhr</div>' +
-				'</div><!-- /grid-a -->' +
-				'</div>';
-		
+				'<p><strong>' + value.semester + '</strong></p>' +
+				'<p class="ui-li-aside"><strong>' + date.getDate() + '.' + date.getMonth() + '. ' + date.getHours() + ':' + date.getMinutes()  + '</strong>Uhr</p>' +
+				'<p>by ' + value.writer + '</p>' +
+				'</a></li>';
+			
+			var newsItem = '<div id="news-item-'+ value.nr +'" data-role="page" data-add-back-btn="true" data-theme="b">' +
+				'<div data-role="header"><h1></h1></div>' +
+				'<div data-role="content">' + 
+					'<h4>' + value.subject + '</h4>' +
+					'<span>' + convert(value.news) + '</span>' + 
+				'</div></div>';
+				
 			items.push(html);
+			$('#newsPage').after(newsItem);
 		});
 		// create a div in the content area
 		// with the joined news
-		$('#content').html($('<div/>', {
-			'data-role': 'collapsible-set',
-			'data-transition': 'slide',
+		$('#newsList').html($('<ul/>', {
+			'data-role': 'listview',
 			html: items.reverse().join('')
 			// trigger create to rerender the page by jQuery Mobile
 		})).trigger( 'create' );
@@ -98,13 +102,23 @@
 		// if the page ist loaded call getNews()
 		getNews();
 		
-		 $("#pageone").bind("swipeleft", function(event,ui){
-		  $.mobile.changePage($("#pagetwo"));
-		 })
-
-		 $("#pagetwo").bind("swiperight", function(event,ui){
-		  $.mobile.changePage($("#pageone"), {reverse:true});
-		 })
+		$('.timetable').live('swipeleft swiperight',function(event){
+			if (event.type == "swiperight") {
+				var prev = $("#previndex",$.mobile.activePage);
+				var previndex = $(prev).data("index");
+				if(previndex != '') {
+					$.mobile.changePage($('#'+previndex),{transition:"none"});
+				}
+			}
+			if (event.type == "swipeleft") {
+				var next = $("#nextindex",$.mobile.activePage);
+				var nextindex = $(next).data("index");
+				if(nextindex != '') {
+					$.mobile.changePage($('#'+nextindex),{transition:"none"});
+				}
+			}
+			event.preventDefault();
+		});
 	});
 	</script>
 	<style>
@@ -112,15 +126,55 @@
 	</style>
 </head>
 <body> 
-<div data-role="page" data-theme="b" id="pageone">
-	<button data-role="button" data-icon="refresh" onclick="getNews(true);" data-theme="b">Update!</button>
-	<div data-role="content" id="content">	
-	</div><!-- /content -->
-</div><!-- /page -->
-<div data-role="page" data-theme="b" id="pagetwo">
- <div data-role="content" id="content2">
-  SECOND PAGE
- </div><!-- /content -->
-</div><!-- /page -->
+	<div data-role="page" data-theme="b" id="newsPage">
+		<div data-role="header">
+			<h1>News</h1>
+			<a href="#monday" data-icon="arrow-r" data-role="button" data-theme="a" data-transition="none" class="left">Stundenplan</a>
+			<a onclick="getNews(true);" data-icon="refresh" data-role="button" data-theme="a" class="ui-btn-right">Update!</a>
+	 	</div>
+		<div data-role="content" id="newsList">	
+		</div><!-- /content -->
+	</div><!-- /page -->
+	<!-- timetable -->	
+	<div data-role="page" data-theme="b" id="monday" class="timetable">
+	 <div data-role="header">
+	 	<h1>Montag</h1>
+	 	<a href="#newsPage" data-icon="arrow-l" data-role="button" data-theme="a" class="ui-btn-left" data-transition="none">News</a>
+	 </div>
+	 <span id="previndex" data-index=""></span>
+	 <span id="nextindex" data-index="tuesday"></span>
+	</div><!-- /page -->
+	<div data-role="page" data-theme="b" id="tuesday" class="timetable">
+	 <div data-role="header">
+	 	<h1>Dienstag</h1>
+	  	<a href="#newsPage" data-icon="arrow-l" data-role="button" data-theme="a" class="ui-btn-left" data-transition="none">News</a>
+	 </div>
+	 <span id="previndex" data-index="monday"></span>
+	 <span id="nextindex" data-index="wednesday"></span>
+	</div><!-- /page -->
+	<div data-role="page" data-theme="b" id="wednesday" class="timetable">
+	 <div data-role="header">
+	 	<h1>Mittwoch</h1>
+	  	<a href="#newsPage" data-icon="arrow-l" data-role="button" data-theme="a" class="ui-btn-left" data-transition="none">News</a>
+	 </div>
+	 <span id="previndex" data-index="tuesday"></span>
+	 <span id="nextindex" data-index="thursday"></span>
+	</div><!-- /page -->
+	<div data-role="page" data-theme="b" id="thursday" class="timetable">
+	 <div data-role="header">
+	 	<h1>Donnerstag</h1>
+	  	<a href="#newsPage" data-icon="arrow-l" data-role="button" data-theme="a" class="ui-btn-left" data-transition="none">News</a>
+	 </div>
+	 <span id="previndex" data-index="wednesday"></span>
+	 <span id="nextindex" data-index="friday"></span>
+	</div><!-- /page -->
+	<div data-role="page" data-theme="b" id="friday" class="timetable">
+	 <div data-role="header">
+	 	<h1>Freitag</h1>
+	  	<a href="#newsPage" data-icon="arrow-l" data-role="button" data-theme="a" class="ui-btn-left" data-transition="none">News</a>
+	 </div>
+	 <span id="previndex" data-index="thursday"></span>
+	 <span id="nextindex" data-index=""></span>
+	</div><!-- /page -->
 </body>
 </html>
