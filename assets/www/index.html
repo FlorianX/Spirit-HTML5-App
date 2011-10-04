@@ -72,7 +72,7 @@
 			var html = '<li><a href="#news-item-' + value.nr + '" data-transition="none">' +
 				'<h3>' + value.subject + '</h3>' +
 				'<p><strong>' + value.semester + '</strong></p>' +
-				'<p class="ui-li-aside"><strong>' + date.getDate() + '.' + date.getMonth() + '. ' + date.getHours() + ':' + date.getMinutes()  + '</strong>Uhr</p>' +
+				'<p class="ui-li-aside"><strong>' + date.getDate() + '.' + date.getMonth() + '. ' + checkTime(date.getHours()) + ':' + checkTime(date.getMinutes())  + '</strong>Uhr</p>' +
 				'<p>by ' + value.writer + '</p>' +
 				'</a></li>';
 			
@@ -124,6 +124,14 @@
 			event.preventDefault();
 		});
 	});
+	function checkTime(i)
+	{
+	if (i<10)
+	  {
+	  i="0" + i;
+	  }
+	return i;
+	}
 	</script>
 	<style>
 	.news_writer, .news_semester{margin-bottom:10px;}
