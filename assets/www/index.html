@@ -76,7 +76,7 @@
 				'<p>by ' + value.writer + '</p>' +
 				'</a></li>';
 			
-			var newsItem = '<div id="news-item-'+ value.nr +'" data-role="page" data-add-back-btn="true" data-theme="b">' +
+			var newsItem = '<div id="news-item-'+ value.nr +'" data-role="page" data-add-back-btn="true" data-theme="b" class="singleNews">' +
 				'<div data-role="header"><h1></h1></div>' +
 				'<div data-role="content">' + 
 					'<h4>' + value.subject + '</h4>' +
@@ -107,16 +107,20 @@
 				var prev = $("#previndex",$.mobile.activePage);
 				var previndex = $(prev).data("index");
 				if(previndex != '') {
-					$.mobile.changePage($('#'+previndex),{transition:"none"});
+					$.mobile.changePage($('#'+previndex), {transition: "none"});
 				}
 			}
 			if (event.type == "swipeleft") {
 				var next = $("#nextindex",$.mobile.activePage);
 				var nextindex = $(next).data("index");
 				if(nextindex != '') {
-					$.mobile.changePage($('#'+nextindex),{transition:"none"});
+					$.mobile.changePage($('#'+nextindex), {transition: "none"});
 				}
 			}
+			event.preventDefault();
+		});
+		$('.singleNews').live('swiperight',function(event){
+			$.mobile.changePage($('#newsPage'), {transition: "none"});
 			event.preventDefault();
 		});
 	});
