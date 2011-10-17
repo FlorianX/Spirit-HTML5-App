@@ -20,7 +20,7 @@ var table=/^table\s*{(.*)}\..*/;
 var trstyle = /^\{(\S+)\}\.\s*\|/;
 
 function convert(t) {
-	var lines = t.split(/^\r?\n/);
+	var lines = t.split(/\r?\n/);
 	html="";
 	inpr=inbq=inbqq=0;
 	for(var i=0;i<lines.length;i++) {
