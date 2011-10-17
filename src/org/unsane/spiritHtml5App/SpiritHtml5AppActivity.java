@@ -51,7 +51,7 @@ public class SpiritHtml5AppActivity extends Activity {
     
     @Override
     public void onResume() {
-  	  tracker.trackPageView("/SpiritHtml5AppResumed");
+  	  tracker.trackPageView("/SpiritHtml5App");
   	  super.onResume();
   	}
 }
