@@ -9,6 +9,14 @@
 	<script src="jquery.mobile.min.js"></script>
 	<script src="textile.js"></script>
 	<script>
+	function checkLeadingZero(i)
+	{
+		if (i<10)
+		{
+			i="0" + i;
+		}
+		return i;
+	}
 	/**
 	 *	will be called by if the document is ready or the user clicked the update button 
 	 *  
@@ -24,7 +32,7 @@
 		// check if localStorage is available
 		if(typeof localStorage !== 'undefined'){
 			// get the saved data if it's available
-			var localNewsJSON = localStorage.getItem('SpiritNews');
+			var localNewsJSON = localStorage.getItem('SpiritApp_News');
 		}
 		
 		// check if there is data from the localStorage and
@@ -39,7 +47,7 @@
 			  dataType: 'json',
 			  success: function (data){
 					// save the data to the localStorage
-					localStorage.setItem('SpiritNews', JSON.stringify(data));
+					localStorage.setItem('SpiritApp_News', JSON.stringify(data));
 					// call renderNews with the fetched data
 					renderNews(data);
 				},
@@ -66,26 +74,30 @@
 		$.each(news, function(key, value) {
 			// create a JavaScript Date object
 			var date = new Date(value.date);
-			
+	
 			// create the html for each news
-			// the data-* attributes are used by jQuery ;obile 
-			var html = '<div data-role="collapsible" data-collapsed="true" data-theme="b">'+
+			// the data-* attributes are used by jQuery mobile
+			var html = '<li><a href="#news-item-' + value.nr + '" data-transition="none">' +
 				'<h3>' + value.subject + '</h3>' +
-				// convert textile to html with the textile.js
-				'<div class="news_content">' + convert(value.news) + '</div>' +
-				'<div class="ui-grid-a">' +
-				'<div class="ui-block-a news_writer">by ' + value.writer + '</div>' +
-				'<div class="ui-block-b">' + date.getDate() + '.' + date.getMonth() + '. ' + date.getHours() + ':' + date.getMinutes()  + 'Uhr</div>' +
-				'</div><!-- /grid-a -->' +
-				'</div>';
-		
+				'<p><strong>' + value.semester + '</strong></p>' +
+				'<p class="ui-li-aside"><strong>' + checkLeadingZero(date.getDate()) + '.' + checkLeadingZero(date.getMonth()) + '. ' + checkLeadingZero(date.getHours()) + ':' + checkLeadingZero(date.getMinutes()) + '</strong>Uhr</p>' +
+				'<p>by ' + value.writer + '</p>' +
+				'</a></li>';
+	
+			var newsItem = '<div id="news-item-'+ value.nr +'" data-role="page" data-add-back-btn="true" data-theme="b" class="singleNews">' +
+				'<div data-role="header"><h1></h1></div>' +
+				'<div data-role="content">' +
+					'<h4>' + value.subject + '</h4>' +
+					'<span>' + convert(value.news) + '</span>' +
+				'</div></div>';
+	
 			items.push(html);
+			$('#newsPage').after(newsItem);
 		});
 		// create a div in the content area
 		// with the joined news
-		$('#content').html($('<div/>', {
-			'data-role': 'collapsible-set',
-			'data-transition': 'slide',
+		$('#newsList').html($('<ul/>', {
+			'data-role': 'listview',
 			html: items.reverse().join('')
 			// trigger create to rerender the page by jQuery Mobile
 		})).trigger( 'create' );
@@ -96,7 +108,13 @@
 	
 	// if the page ist loaded call getNews()
 	$(document).ready(function(){
-			getNews();
+		getNews();
+
+		// bind news swipe event
+		$('.singleNews').live('swiperight',function(event){
+			$.mobile.changePage($('#newsPage'), {transition: "none"});
+			event.preventDefault();
+		});
 	});  
 	</script>
 	<style>
@@ -104,10 +122,13 @@
 	</style>
 </head>
 <body> 
-<div data-role="page" data-theme="b">
-	<button data-role="button" data-icon="refresh" onclick="getNews(true);" data-theme="b">Update!</button>
-	<div data-role="content" id="content">	
-	</div><!-- /content -->
-</div><!-- /page -->
+	<div data-role="page" data-theme="b" id="newsPage">
+		<div data-role="header">
+			<h1>News</h1>
+			<a onclick="getNews(true);" data-icon="refresh" data-role="button" data-theme="a" class="ui-btn-right">Update!</a>
+		</div>
+		<div data-role="content" id="newsList">
+		</div><!-- /content -->
+	</div><!-- /page -->
 </body>
 </html>
