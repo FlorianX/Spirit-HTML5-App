@@ -8,100 +8,13 @@
 	<script src="jquery.min.js"></script>
 	<script src="jquery.mobile.min.js"></script>
 	<script src="textile.js"></script>
+	<script src="utilities.js"></script>
 	<script>
-	/**
-	 *	will be called by if the document is ready or the user clicked the update button 
-	 *  
-	 *  @param boolean live Decides the fetching method.
-	 *  
-	 */
-	function getNews(live){
-		// shows the loading animation
-		$.mobile.showPageLoadingMsg();
-		// JS knows no default parameter values therefore this
-		live = typeof(live) != 'undefined' ? live : false;
-		
-		// check if localStorage is available
-		if(typeof localStorage !== 'undefined'){
-			// get the saved data if it's available
-			var localNewsJSON = localStorage.getItem('SpiritNews');
-		}
-		
-		// check if there is data from the localStorage and
-		// whether the data must be fetched live 
-		if(localNewsJSON && !live){
-			// call renderNews with the data from the localStorage
-			renderNews(JSON.parse(localNewsJSON));
-		}else{
-			// fetch the news from the REST interface of the news plattform 
-			$.ajax({
-			  url: "http://spirit.fh-schmalkalden.de/rest/news",
-			  dataType: 'json',
-			  success: function (data){
-					// save the data to the localStorage
-					localStorage.setItem('SpiritNews', JSON.stringify(data));
-					// call renderNews with the fetched data
-					renderNews(data);
-				},
-			  error: function(jqXHR, textStatus, errorThrown){
-			      // hide the loading animation
-				  $.mobile.hidePageLoadingMsg();
-				  alert("Konnte keine Verbindung zum Server herstellen!");
-			    }
-			});
-		}
-	}
-
-	/**
-	 * This function creates the html for the news.
-	 * 
-	 *
-	 * @param JSON news 
-	 */
-	function renderNews(news){
-		// needed for html creation
-		var items = [];
-
-		// jQery utility funtion
-		$.each(news, function(key, value) {
-			// create a JavaScript Date object
-			var date = new Date(value.date);
-			
-			// create the html for each news
-			// the data-* attributes are used by jQuery mobile 
-			var html = '<li><a href="#news-item-' + value.nr + '" data-transition="none">' +
-				'<h3>' + value.subject + '</h3>' +
-				'<p><strong>' + value.semester + '</strong></p>' +
-				'<p class="ui-li-aside"><strong>' + date.getDate() + '.' + date.getMonth() + '. ' + checkTime(date.getHours()) + ':' + checkTime(date.getMinutes())  + '</strong>Uhr</p>' +
-				'<p>by ' + value.writer + '</p>' +
-				'</a></li>';
-			
-			var newsItem = '<div id="news-item-'+ value.nr +'" data-role="page" data-add-back-btn="true" data-theme="b" class="singleNews">' +
-				'<div data-role="header"><h1></h1></div>' +
-				'<div data-role="content">' + 
-					'<h4>' + value.subject + '</h4>' +
-					'<span>' + convert(value.news) + '</span>' + 
-				'</div></div>';
-				
-			items.push(html);
-			$('#newsPage').after(newsItem);
-		});
-		// create a div in the content area
-		// with the joined news
-		$('#newsList').html($('<ul/>', {
-			'data-role': 'listview',
-			html: items.reverse().join('')
-			// trigger create to rerender the page by jQuery Mobile
-		})).trigger( 'create' );
-		
-		// hide the loading animation
-		$.mobile.hidePageLoadingMsg();
-	}
-	
 	$(document).ready(function(){
 		// if the page ist loaded call getNews()
 		getNews();
 		
+		// bind timetable swipe events
 		$('.timetable').live('swipeleft swiperight',function(event){
 			if (event.type == "swiperight") {
 				var prev = $("#previndex",$.mobile.activePage);
@@ -119,73 +32,129 @@
 			}
 			event.preventDefault();
 		});
+		
+		// bind news swipe event
 		$('.singleNews').live('swiperight',function(event){
 			$.mobile.changePage($('#newsPage'), {transition: "none"});
 			event.preventDefault();
 		});
 	});
-	function checkTime(i)
-	{
-		if (i<10)
-		  {
-			  i="0" + i;
-		  }
-		return i;
-	}
+
 	</script>
 	<style>
 	.news_writer, .news_semester{margin-bottom:10px;}
+	.container{position:absolute;right:10px;top:.4em;margin:0;padding:0}
 	</style>
 </head>
 <body> 
 	<div data-role="page" data-theme="b" id="newsPage">
 		<div data-role="header">
 			<h1>News</h1>
-			<a href="#monday" data-icon="arrow-r" data-role="button" data-theme="a" data-transition="none" class="left">Stundenplan</a>
+			<a href="#Montag" onclick="getSchedule();" data-icon="arrow-r" data-role="button" data-theme="a" data-transition="none" class="left">Stundenplan</a>
 			<a onclick="getNews(true);" data-icon="refresh" data-role="button" data-theme="a" class="ui-btn-right">Update!</a>
 	 	</div>
 		<div data-role="content" id="newsList">	
 		</div><!-- /content -->
 	</div><!-- /page -->
 	<!-- timetable -->	
-	<div data-role="page" data-theme="b" id="monday" class="timetable">
-	 <div data-role="header">
+	<div data-role="page" data-theme="b" id="Montag" class="timetable">
+	 <div data-role="header" data-inline="true">
 	 	<h1>Montag</h1>
-	 	<a href="#newsPage" data-icon="arrow-l" data-role="button" data-theme="a" class="ui-btn-left" data-transition="none">News</a>
+		<a href="#newsPage" data-icon="arrow-l" data-role="button" data-theme="a" class="ui-btn-left" data-transition="none">News</a>
+		<div data-role="fieldcontain" class="container">
+			<select class="semesterList" data-native-menu="false" data-inline="true" data-transition="none">
+				<option value="bai1">BaI1</option>
+				<option value="bai3">BaI3</option>
+				<option value="bai5">BaI5</option>
+				<option value="bawi1">BaWI1</option>
+				<option value="bawi3">BaWI3</option>
+				<option value="bawi5">BaWI5</option>
+				<option value="bais1">BaIS1</option>
+				<option value="bais3">BaIS3</option>
+				<option value="bais5">BaIS5</option>
+				<option value="bamm1">BaMM1</option>
+				<option value="bamm3">BaMM3</option>
+				<option value="bamm5">BaMM5</option>
+				<option value="mai1">MaI1</option>
+				<option value="mai3">MaI3</option>
+				<!-- @TODO search a nice way for
+				 semester switch -->
+				<!-- 
+				<option value="bai2">BaI2</option>
+				<option value="bai4">BaI4</option>
+				<option value="bai6">BaI6</option>
+				<option value="bawi2">BaWI2</option>
+				<option value="bawi4">BaWI4</option>
+				<option value="bawi6">BaWI6</option>
+				<option value="bais2">BaIS2</option>
+				<option value="bais4">BaIS4</option>
+				<option value="bais6">BaIS6</option>
+				<option value="bamm2">BaMM2</option>
+				<option value="bamm4">BaMM4</option>
+				<option value="bamm6">BaMM6</option>
+				<option value="mai2">MaI2</option>
+				<option value="mai4">MaI4</option> -->
+			</select>
+		</div>
+<table>
+<tbody>
+  <tr>
+    <td class="test">08.15 - 09.45</td>
+  </tr>
+  <tr>
+    <td class="10.00-11.30">10.00 - 11.30</td>
+  </tr>
+  <tr>
+    <td class="11.45-13.15">11.45 - 13.15</td>
+  </tr>
+  <tr>
+    <td class="14.15-15.45">14.15 - 15.45</td>
+  </tr>
+  <tr>
+    <td class="16.00-17.30">16.00 - 17.30</td>
+  </tr>
+  <tr>
+    <td class="17.45-19.15">17.45 - 19.15</td>
+  </tr>
+  <tr>
+    <td class="19.30-21.00">19.30 - 21.00</td>
+  </tr>
+  </tbody>
+</table>
 	 </div>
 	 <span id="previndex" data-index=""></span>
-	 <span id="nextindex" data-index="tuesday"></span>
+	 <span id="nextindex" data-index="Dienstag"></span>
 	</div><!-- /page -->
-	<div data-role="page" data-theme="b" id="tuesday" class="timetable">
+	<div data-role="page" data-theme="b" id="Dienstag" class="timetable">
 	 <div data-role="header">
 	 	<h1>Dienstag</h1>
 	  	<a href="#newsPage" data-icon="arrow-l" data-role="button" data-theme="a" class="ui-btn-left" data-transition="none">News</a>
 	 </div>
-	 <span id="previndex" data-index="monday"></span>
-	 <span id="nextindex" data-index="wednesday"></span>
+	 <span id="previndex" data-index="Montag"></span>
+	 <span id="nextindex" data-index="Mittwoch"></span>
 	</div><!-- /page -->
-	<div data-role="page" data-theme="b" id="wednesday" class="timetable">
+	<div data-role="page" data-theme="b" id="Mittwoch" class="timetable">
 	 <div data-role="header">
 	 	<h1>Mittwoch</h1>
 	  	<a href="#newsPage" data-icon="arrow-l" data-role="button" data-theme="a" class="ui-btn-left" data-transition="none">News</a>
 	 </div>
-	 <span id="previndex" data-index="tuesday"></span>
-	 <span id="nextindex" data-index="thursday"></span>
+	 <span id="previndex" data-index="Dienstag"></span>
+	 <span id="nextindex" data-index="Donnerstag"></span>
 	</div><!-- /page -->
-	<div data-role="page" data-theme="b" id="thursday" class="timetable">
+	<div data-role="page" data-theme="b" id="Donnerstag" class="timetable">
 	 <div data-role="header">
 	 	<h1>Donnerstag</h1>
 	  	<a href="#newsPage" data-icon="arrow-l" data-role="button" data-theme="a" class="ui-btn-left" data-transition="none">News</a>
 	 </div>
-	 <span id="previndex" data-index="wednesday"></span>
-	 <span id="nextindex" data-index="friday"></span>
+	 <span id="previndex" data-index="Mittwoch"></span>
+	 <span id="nextindex" data-index="Freitag"></span>
 	</div><!-- /page -->
-	<div data-role="page" data-theme="b" id="friday" class="timetable">
+	<div data-role="page" data-theme="b" id="Freitag" class="timetable">
 	 <div data-role="header">
 	 	<h1>Freitag</h1>
 	  	<a href="#newsPage" data-icon="arrow-l" data-role="button" data-theme="a" class="ui-btn-left" data-transition="none">News</a>
 	 </div>
-	 <span id="previndex" data-index="thursday"></span>
+	 <span id="previndex" data-index="Donnerstag"></span>
 	 <span id="nextindex" data-index=""></span>
 	</div><!-- /page -->
 </body>
