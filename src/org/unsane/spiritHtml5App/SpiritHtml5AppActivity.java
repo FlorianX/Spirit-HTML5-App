@@ -4,6 +4,7 @@ import com.google.android.apps.analytics.GoogleAnalyticsTracker;
 
 import android.app.Activity;
 import android.os.Bundle;
+import android.view.KeyEvent;
 import android.webkit.WebChromeClient;
 import android.webkit.WebSettings;
 import android.webkit.WebView;
@@ -11,6 +12,7 @@ import android.webkit.WebView;
 public class SpiritHtml5AppActivity extends Activity {
 	
 	GoogleAnalyticsTracker tracker;
+	WebView webView;
 	
     /** Called when the activity is first created. */
     @Override
@@ -27,7 +29,7 @@ public class SpiritHtml5AppActivity extends Activity {
          * @see http://www.youtube.com/watch?v=uVqp1zcMfbE
          */
         // create a webView
-        WebView webView = (WebView)findViewById(R.id.webView);
+        webView = (WebView)findViewById(R.id.webView);
 
         // enable some settings
         WebSettings settings = webView.getSettings();
@@ -42,6 +44,15 @@ public class SpiritHtml5AppActivity extends Activity {
         tracker.trackPageView("/SpiritHtml5App");
     }
     
+    @Override
+    public boolean onKeyDown(int keyCode, KeyEvent event) {
+        if ((keyCode == KeyEvent.KEYCODE_BACK) && webView.canGoBack()) {
+            webView.goBack();
+            return true;
+        }
+        return super.onKeyDown(keyCode, event);
+    }
+
     @Override
     protected void onDestroy() {
       super.onDestroy();
