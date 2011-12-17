@@ -55,14 +55,14 @@ public class SpiritHtml5AppActivity extends Activity {
 
     @Override
     protected void onDestroy() {
-      super.onDestroy();
-      // Stop the tracker when it is no longer needed.
-      tracker.stopSession();
+        super.onDestroy();
+        //Stop the tracker when it is no longer needed.
+        tracker.stopSession();
     }
     
     @Override
     public void onResume() {
-  	  tracker.trackPageView("/SpiritHtml5App");
-  	  super.onResume();
-  	}
+        super.onResume();
+        tracker.trackPageView("/SpiritHtml5App");
+    }
 }
